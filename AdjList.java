@@ -58,7 +58,7 @@ public class AdjList<T> {
      *         either node does not already exist in the graph
      */
     public boolean addEdge(Node<T> nodeOne, Node<T> nodeTwo) {
-        return addEdge(nodeOne, nodeTwo, 1);
+        return addEdge(nodeOne, nodeTwo, 1.0);
     }
 
     /**
