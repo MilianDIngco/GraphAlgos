@@ -8,6 +8,9 @@ import java.util.HashMap;
  * 
  *        Description:
  * 
+ *        Constructors:
+ *        -
+ * 
  *        Member Methods:
  *        - public boolean addNode<T>(Point p)
  *        - public boolean addNode<T>(int x, int y)
@@ -16,8 +19,16 @@ import java.util.HashMap;
  *        - public Node<T> removeNode(Node<T> node)
  *        - public Node<T> getNode(Point p)
  *        - public Node<T> getNode(int x, int y)
- *      - public Node<T> getNeighbors(Node<T> node)
- *
+ *        - public List<Node<T>> getNode(T value)
+ *        - public Node<T> getNeighbors(Node<T> node)
+ *        - public boolean addEdge(Node<T> nodeOne, Node<T> nodeTwo)
+ *        - public boolean removeEdge(Node<T> nodeOne, Node<T> nodeTwo)
+ *        - public void setType(int graphType)
+ *        - public void setNamingFunction(NamingFunction<T> nf, T baseValue)
+ * 
+ * 
+ *        root head tail etc
+ * 
  * 
  *        Thoughts:
  *        - its not really worth creating a spatial partitioning system
@@ -42,6 +53,8 @@ public class Graph<T> {
     private int graphType = 0;
     private AdjMat<T> am;
     private AdjList<T> al;
+    private NamingFunction<T> nf;
+    private T baseValue;
 
     public Graph(int graphType) {
         this.graphType = graphType;
@@ -49,16 +62,7 @@ public class Graph<T> {
         al = new AdjList<>();
     }
 
-    // NAMING NODES
-    /*
-     * I want to have a function that allows the user to write a function for how
-     * the naming convention for new nodes goes.
-     * For example, if the type is Char, maybe for each new node they increment the
-     * char value by 1
-     * If the type is integer, they multiply by 2
-     * If the type is string, maybe they pass in a list of strings and iterate over
-     * that list
-     */
+    
 
 }
 

@@ -28,7 +28,7 @@ import java.util.HashMap;
  */
 public class AdjList<T> {
 
-    private HashMap<Node<T>, ArrayList<Node<T>>> adjList;
+    private HashMap<Node<T>, ArrayList<Pair<Node<T>, Integer>>> adjList;
 
     public AdjList() {
         adjList = new HashMap<>();
@@ -58,10 +58,27 @@ public class AdjList<T> {
      *         either node does not already exist in the graph
      */
     public boolean addEdge(Node<T> nodeOne, Node<T> nodeTwo) {
+        return addEdge(nodeOne, nodeTwo, 1);
+    }
+
+    /**
+     * Adds a directional edge between two nodes in the specified direction with a
+     * weight
+     * from nodeOne -> nodeTwo
+     * but not from nodeTwo -> nodeOne
+     * 
+     * @param nodeOne The SOURCE node
+     * @param nodeTwo The TARGET node
+     * @param weight  Weight of the edge
+     * @return Returns true if adding the node was successful, returns false if
+     *         either node does not already exist in the graph
+     */
+    public boolean addEdge(Node<T> nodeOne, Node<T> nodeTwo, Integer weight) {
         if (!adjList.containsKey(nodeOne) || !adjList.containsKey(nodeTwo))
             return false;
 
-        adjList.get(nodeOne).add(nodeTwo);
+        adjList.get(nodeOne).add(new Pair<Node<T>, Integer>(nodeTwo, weight));
+
         return true;
     }
 
@@ -76,27 +93,51 @@ public class AdjList<T> {
             return null;
         // No list of edges because could be a directed graph; must check each list
         // could probably keep track of edges as memory is less of a concern though
-        for (var list : adjList.values()) {
-            list.remove(node);
-        }
         adjList.remove(node);
+        for (var list : adjList.values()) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).one == node)
+                    list.remove(i);
+            }
+        }
+
         return node;
     }
 
     /**
-     * Removes an edge between two nodes in the specified direction
-     * from nodeOne -> nodeTwo
-     * but not from nodeTwo -> nodeOne
+     * Removes an edge given a source node and a target node
+     * Removes the first edge found between the two
      * 
      * @param nodeOne The SOURCE node
      * @param nodeTwo The TARGET node
-     * @return Returns true if the edge was successfully removed, returns false if
-     *         edge does not exist
+     * @return Returns true if the edge was successfully removed, false if either
+     *         node doesn't exist or if the edge itself doesn't exist
      */
     public boolean removeEdge(Node<T> nodeOne, Node<T> nodeTwo) {
         if (!adjList.containsKey(nodeOne) || !adjList.containsKey(nodeTwo))
             return false;
-        return adjList.get(nodeOne).remove(nodeTwo);
+        ArrayList<Pair<Node<T>, Integer>> edgeList = adjList.get(nodeOne);
+        for (int i = 0; i < edgeList.size(); i++) {
+            if (edgeList.get(i).one == nodeTwo) {
+                edgeList.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Removes an edge given a node and the edge
+     * 
+     * @param nodeOne The SOURCE node
+     * @param edge    The edge from the SOURCE node
+     * @return Returns true if the edge was successfully removed, returns false if
+     *         edge does not exist
+     */
+    public boolean removeEdge(Node<T> nodeOne, Pair<Node<T>, Integer> edge) {
+        if (!adjList.containsKey(nodeOne) || !adjList.containsKey(edge.one))
+            return false;
+        return adjList.get(nodeOne).remove(edge);
     }
 
     /**
@@ -108,17 +149,42 @@ public class AdjList<T> {
      *         node doesn't exist or the edge doesn't exist
      */
     public boolean edgeExists(Node<T> nodeOne, Node<T> nodeTwo) {
-        return (adjList.containsKey(nodeOne) && adjList.containsKey(nodeTwo) && adjList.get(nodeOne).contains(nodeTwo));
+        ArrayList<Pair<Node<T>, Integer>> edgeList = adjList.get(nodeOne);
+        for (Pair<Node<T>, Integer> edge : edgeList) {
+            if (edge.one == nodeTwo)
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Detects if a given edge exists given a node and an edge
+     * 
+     * @param node The SOURCE node
+     * @param edge The edge
+     * @return Returns true if the edge exists, false if it doesn't or if either
+     *         node doesn't exist
+     */
+    public boolean edgeExists(Node<T> node, Pair<Node<T>, Integer> edge) {
+        if (!adjList.containsKey(node) || !adjList.containsKey(edge.one))
+            return false;
+
+        return adjList.get(node).contains(edge);
     }
 
     /**
      * @param node Gets all nodes this node has an edge pointing to
-     * @return Returns a list of Node<T> that are connected to the given node or
+     * @return Returns a list of Pair<Node<T>> representing edges and their
+     *         weights that are connected to the given node or
      *         null if the node does not exist
      */
-    public List<Node<T>> getNeighbors(Node<T> node) {
+    public List<Pair<Node<T>, Integer>> getNeighbors(Node<T> node) {
         if (!adjList.containsKey(node))
             return null;
+        ArrayList<Node<T>> neighbors = new ArrayList<>(adjList.get(node).size());
+        for (Pair<Node<T>, Integer> edge : adjList.get(node)) {
+            neighbors.add(edge.one);
+        }
         return adjList.get(node);
     }
 
@@ -140,8 +206,8 @@ public class AdjList<T> {
         String res = "";
         for (var pair : adjList.entrySet()) {
             res += pair.getKey().getVal() + ": ";
-            for (var edge : pair.getValue()) {
-                res += edge + " ";
+            for (Pair<Node<T>, Integer> edge : pair.getValue()) {
+                res += edge.one.getVal() + " ";
             }
             res += "\n";
         }
