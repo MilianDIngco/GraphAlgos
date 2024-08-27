@@ -178,13 +178,26 @@ public class AdjList<T> {
      *         weights that are connected to the given node or
      *         null if the node does not exist
      */
-    public List<Pair<Node<T>, Double>> getNeighbors(Node<T> node) {
+    public List<Node<T>> getNeighbors(Node<T> node) {
         if (!adjList.containsKey(node))
             return null;
         ArrayList<Node<T>> neighbors = new ArrayList<>(adjList.get(node).size());
         for (Pair<Node<T>, Double> edge : adjList.get(node)) {
             neighbors.add(edge.one);
         }
+        return neighbors;
+    }
+
+    /**
+     * Gets all edges this node has
+     * 
+     * @param node Node which we want to find its edges
+     * @return Returns the list of edges and their weights, null if the node does
+     *         not exist
+     */
+    public List<Pair<Node<T>, Double>> getEdges(Node<T> node) {
+        if (!adjList.containsKey(node))
+            return null;
         return adjList.get(node);
     }
 

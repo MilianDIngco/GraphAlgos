@@ -81,7 +81,7 @@ public class Node<T> {
     }
 
     public String toString() {
-        String str = val + ": [x: " + p.getX() + ", y: " + p.getY() + "]";
+        String str = "{" + val + ": [x: " + p.getX() + ", y: " + p.getY() + "]}";
         return str;
     }
 
